@@ -4,15 +4,36 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using QuestionExchange.Models;
 
 namespace QuestionExchange.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        private readonly AppDbContext _context;
+        private readonly Tenant _currentTenant;
+        
+        public HomeController(AppDbContext context, Tenant tenant)
         {
-            return View();
+            _context = context;
+            _currentTenant = tenant;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            var topQuestions = await _context
+                .Questions
+                .Where(q => q.Tenant.Id == _currentTenant.Id)
+                .OrderByDescending(q => q.UpdatedAt)
+                .Take(5)
+                .ToArrayAsync();
+                
+            var viewModel = new QuestionListViewModel
+            {
+                Questions = topQuestions
+            };
+            return View(viewModel);
         }
 
         public IActionResult About()

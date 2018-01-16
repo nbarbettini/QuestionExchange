@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
+using QuestionExchange.Models;
 
 namespace QuestionExchange
 {
@@ -27,6 +28,8 @@ namespace QuestionExchange
             var connectionString = "connection-string";
             services.AddEntityFrameworkNpgsql()
                 .AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
+
+            services.AddMultitenancy<Tenant, CachingTenantResolver>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -42,6 +45,8 @@ namespace QuestionExchange
             }
 
             app.UseStaticFiles();
+
+            app.UseMultitenancy<Tenant>();
 
             app.UseMvc(routes =>
             {
