@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using QuestionExchange.Models;
+using SaasKit.Multitenancy.Internal;
 
 namespace QuestionExchange
 {
@@ -48,6 +49,9 @@ namespace QuestionExchange
             app.UseStaticFiles();
 
             app.UseMultitenancy<Tenant>();
+
+            // For now, redirect unresolved tenants to a generic welcome page
+            app.UseMiddleware<TenantUnresolvedRedirectMiddleware<Tenant>>("/welcome.html", false);
 
             app.UseMvc(routes =>
             {
