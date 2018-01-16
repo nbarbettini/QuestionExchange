@@ -25,7 +25,8 @@ namespace QuestionExchange
         {
             services.AddMvc();
 
-            var connectionString = "connection-string";
+            var connectionString = Configuration.GetConnectionString("AppDbContext");
+
             services.AddEntityFrameworkNpgsql()
                 .AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
 
